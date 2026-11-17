@@ -1,0 +1,18 @@
+{
+  "tool": "Vivado 2025.2",
+  "part": "xc7a35tcsg324-1",
+  "clock_mhz": 100,
+  "wns_ns": 0.646,
+  "whs_ns": 0.122,
+  "sha256": {
+    "constraints/ego1.xdc": "839c7ae3c798d170b6e71b51100b5e23e8be4b55e7ddabee071a4d1f70d747b8",
+    "output/puzzle.bit": "c40e29ccb4a210df37474b622eb9a0c141eff3bad638e18e0f3f0ce75418ec30",
+    "output/puzzle_routed.dcp": "95ff2fbd460fda03701579d50fe5bff8953f57732fb3da2d031352b32678ae89",
+    "rtl/display_format.v": "584da06b87f7c88f15f5c8fa60b6fd10db3cd2ab15c4df2c9e3eb0436b1c572c",
+    "rtl/input_filter.v": "21eb1e9e7be374f8990e40b5b8f9bb20cb32e98f8e91adf33d517256afc8bd32",
+    "rtl/puzzle_core.v": "30b5ad7fd3a74536d1f34a4a3008058001837505ea4c26e1e5c92a3edb3da023",
+    "rtl/puzzle_top.v": "b5c51235b90140d03f84dac9fcd8ff3cbe8cf0bed2d8306f9c3afc0837b545c6",
+    "rtl/seven_segment.v": "8380d6e70cb3655a8371e85dc2e7304a4034e0fe14ab71c0984a814806ca4e8d",
+    "rtl/uart.v": "a79a03d474ab3440e5842eac312787b2ec16e660e28d2902bb537cdc48c0b826"
+  }
+}

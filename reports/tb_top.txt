@@ -1,0 +1,18 @@
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 12:34:56 MST 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Nov 17 14:43:40 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_top/xsim_script.tcl
+# xsim {tb_top} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TOP_PASS UART packets, buttons, reset, display, LEDs, demo, pages
+$finish called at time : 1433230 ns : File "/tmp/cs207-project-2026/sim/tb_top.sv" Line 129
+exit
+INFO: xsimkernel Simulation Memory Usage: 282328 KB (Peak: 339600 KB), Simulation CPU Usage: 1170 ms
+INFO: [Common 17-206] Exiting xsim at Tue Nov 17 14:43:44 2026...

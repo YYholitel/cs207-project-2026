@@ -1,0 +1,2 @@
+PROGRAM_STATUS PART=xc7a35t DONE=1 CRC_ERROR=0
+Volatile SRAM configuration only; SPI Flash unchanged.

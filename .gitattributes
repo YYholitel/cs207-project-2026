@@ -1,0 +1,2 @@
+# Preserve vendor-generated report formatting verbatim.
+reports/*.txt -whitespace

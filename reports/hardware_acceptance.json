@@ -1,0 +1,39 @@
+{
+  "result": "PASS",
+  "checks": 1254,
+  "seed": 2072026,
+  "timestamp": "2026-11-17T06:38:15.857594+00:00",
+  "port": "/dev/serial/by-id/usb-Xilinx_TUL_1234-tul-if01-port0",
+  "final": {
+    "board": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0,
+      8
+    ],
+    "state": 1,
+    "entered": 9,
+    "good": 0,
+    "bad": 0,
+    "hints": 11,
+    "phase": 1,
+    "flags": 9,
+    "digits": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      15
+    ],
+    "leds": 33291
+  },
+  "trace_file": "hardware_acceptance_trace.jsonl"
+}

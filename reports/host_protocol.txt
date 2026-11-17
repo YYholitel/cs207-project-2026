@@ -1,0 +1,7 @@
+test_no_response_times_out (test_protocol.ProtocolTest.test_no_response_times_out) ... ok
+test_noise_bad_checksum_and_fragmented_valid_response (test_protocol.ProtocolTest.test_noise_bad_checksum_and_fragmented_valid_response) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.026s
+
+OK

@@ -1,0 +1,151 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (lin64) Build 6299465 Fri Nov 14 12:34:56 MST 2025
+| Date         : Tue Nov 17 14:34:22 2026
+| Host         : cachyos-x8664 running 64-bit CachyOS
+| Command      : check_timing -verbose -file reports/check_timing.txt
+| Design       : puzzle_top
+| Device       : 7a35t-csg324
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+check_timing report
+
+Table of Contents
+-----------------
+1. checking no_clock (0)
+2. checking constant_clock (0)
+3. checking pulse_width_clock (0)
+4. checking unconstrained_internal_endpoints (0)
+5. checking no_input_delay (12)
+6. checking no_output_delay (39)
+7. checking multiple_clock (0)
+8. checking generated_clocks (0)
+9. checking loops (0)
+10. checking partial_input_delay (0)
+11. checking partial_output_delay (0)
+12. checking latch_loops (0)
+
+1. checking no_clock (0)
+------------------------
+ There are 0 register/latch pins with no clock.
+
+
+2. checking constant_clock (0)
+------------------------------
+ There are 0 register/latch pins with constant_clock.
+
+
+3. checking pulse_width_clock (0)
+---------------------------------
+ There are 0 register/latch pins which need pulse_width check
+
+
+4. checking unconstrained_internal_endpoints (0)
+------------------------------------------------
+ There are 0 pins that are not constrained for maximum delay.
+
+ There are 0 pins that are not constrained for maximum delay due to constant clock.
+
+
+5. checking no_input_delay (12)
+-------------------------------
+ There are 0 input ports with no input delay specified.
+
+ There are 12 input ports with no input delay but user has a false path constraint. (MEDIUM)
+
+buttons[0]
+buttons[1]
+buttons[2]
+buttons[3]
+buttons[4]
+reset_n
+switches[0]
+switches[1]
+switches[2]
+switches[3]
+switches[4]
+uart_rxd
+
+
+6. checking no_output_delay (39)
+--------------------------------
+ There are 0 ports with no output delay specified.
+
+ There are 39 ports with no output delay but user has a false path constraint (MEDIUM)
+
+digit_en[0]
+digit_en[1]
+digit_en[2]
+digit_en[3]
+digit_en[4]
+digit_en[5]
+digit_en[6]
+digit_en[7]
+led[0]
+led[10]
+led[11]
+led[12]
+led[13]
+led[14]
+led[15]
+led[1]
+led[2]
+led[3]
+led[4]
+led[5]
+led[6]
+led[7]
+led[8]
+led[9]
+seg_left[1]
+seg_left[2]
+seg_left[3]
+seg_left[4]
+seg_left[5]
+seg_left[6]
+seg_left[7]
+seg_right[1]
+seg_right[2]
+seg_right[3]
+seg_right[4]
+seg_right[5]
+seg_right[6]
+seg_right[7]
+uart_txd
+
+ There are 0 ports with no output delay but with a timing clock defined on it or propagating through it
+
+
+7. checking multiple_clock (0)
+------------------------------
+ There are 0 register/latch pins with multiple clocks.
+
+
+8. checking generated_clocks (0)
+--------------------------------
+ There are 0 generated clocks that are not connected to a clock source.
+
+
+9. checking loops (0)
+---------------------
+ There are 0 combinational loops in the design.
+
+
+10. checking partial_input_delay (0)
+------------------------------------
+ There are 0 input ports with partial input delay specified.
+
+
+11. checking partial_output_delay (0)
+-------------------------------------
+ There are 0 ports with partial output delay specified.
+
+
+12. checking latch_loops (0)
+----------------------------
+ There are 0 combinational latch loops in the design through latch input
+
+

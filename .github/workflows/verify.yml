@@ -1,0 +1,20 @@
+name: Verify RTL and host protocol
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  simulation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Independent model and core regression
+        run: |
+          python3 tools/generate_vectors.py
+          iverilog -g2012 -s tb_core -o build/core rtl/*.v sim/tb_core.sv
+          vvp build/core
+      - name: Top-level integration
+        run: |
+          iverilog -g2012 -s tb_top -o build/top rtl/*.v sim/tb_top.sv
+          vvp build/top
+      - name: Host protocol regression
+        run: python3 -m unittest discover -s sim -p 'test_*.py' -v
