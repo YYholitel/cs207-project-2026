@@ -1,0 +1,19 @@
+test_demo_and_disconnect (test_gui.BridgeTest.test_demo_and_disconnect) ... ok
+test_direction_uses_fresh_board_and_rejects_boundary (test_gui.BridgeTest.test_direction_uses_fresh_board_and_rejects_boundary) ... ok
+test_generated_games_are_unique_solvable_and_not_already_won (test_gui.BridgeTest.test_generated_games_are_unique_solvable_and_not_already_won) ... ok
+test_invalid_initialization_does_not_reset_existing_game (test_gui.BridgeTest.test_invalid_initialization_does_not_reset_existing_game) ... ok
+test_moves_are_executed_by_board_and_undo_restores_counters (test_gui.BridgeTest.test_moves_are_executed_by_board_and_undo_restores_counters) ... ok
+test_no_arbitrary_serial_path_or_arbitrary_command (test_gui.BridgeTest.test_no_arbitrary_serial_path_or_arbitrary_command) ... ok
+test_physical_reset_is_read_only_until_explicit_gui_action (test_gui.BridgeTest.test_physical_reset_is_read_only_until_explicit_gui_action) ... ok
+test_unplugged_board_disconnects_with_explicit_error (test_gui.BridgeTest.test_unplugged_board_disconnects_with_explicit_error) ... ok
+test_malformed_input_is_reported (test_gui.HTTPTest.test_malformed_input_is_reported) ... ok
+test_origin_token_and_host_guards (test_gui.HTTPTest.test_origin_token_and_host_guards) ... ok
+test_real_http_flow (test_gui.HTTPTest.test_real_http_flow) ... ok
+test_static_assets_and_no_traversal (test_gui.HTTPTest.test_static_assets_and_no_traversal) ... ok
+test_no_response_times_out (test_protocol.ProtocolTest.test_no_response_times_out) ... ok
+test_noise_bad_checksum_and_fragmented_valid_response (test_protocol.ProtocolTest.test_noise_bad_checksum_and_fragmented_valid_response) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 3.083s
+
+OK

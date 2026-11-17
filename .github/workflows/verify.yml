@@ -16,5 +16,7 @@ jobs:
         run: |
           iverilog -g2012 -s tb_top -o build/top rtl/*.v sim/tb_top.sv
           vvp build/top
-      - name: Host protocol regression
+      - name: GUI bridge and host protocol regression
         run: python3 -m unittest discover -s sim -p 'test_*.py' -v
+      - name: GUI JavaScript syntax
+        run: node --check gui/app.js

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#12161b"><title>SLIDE / 09 — EGO1 Puzzle Studio</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css">
+<script src="/app.js" defer></script>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"></div>
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="/" aria-label="SLIDE 09 首页"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><strong>SLIDE<span> / </span>09</strong><span class="brand-caption">PUZZLE STUDIO</span></a>
+  <div class="header-actions"><span class="hardware-tag">EGO1 <span>×</span> ARTIX-7</span><button id="connect" class="connection"><span class="status-dot"></span><span id="connection-text">连接开发板</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3v5m8-5v5M6 8h12v3a6 6 0 0 1-6 6v4m-6-13h12"/></svg></button></div>
+</header>
+<main class="workspace">
+  <aside class="intro">
+    <div class="eyebrow"><span class="tiny-line"></span> THE ART OF ONE EMPTY SPACE</div>
+    <h1>把秩序<br>移回来<span class="orange">。</span></h1>
+    <p class="intro-copy">八个数字，一个空位。<br>用恰好的移动，让一切归位。</p>
+    <section class="level-section" aria-labelledby="level-title"><div class="section-heading"><h2 id="level-title">选择一场挑战</h2><span>01 — 03</span></div>
+      <div id="levels" class="levels" role="radiogroup" aria-label="开局难度">
+        <button class="level selected" role="radio" aria-checked="true" data-steps="8"><span class="level-number">01</span><span><strong>轻松热身</strong><small>随机走 8 步</small></span><i class="level-orbit"><b></b></i></button>
+        <button class="level" role="radio" aria-checked="false" data-steps="24"><span class="level-number">02</span><span><strong>进入状态</strong><small>随机走 24 步</small></span><i class="level-orbit double"><b></b></i></button>
+        <button class="level" role="radio" aria-checked="false" data-steps="60"><span class="level-number">03</span><span><strong>慢慢推敲</strong><small>随机走 60 步</small></span><i class="level-orbit triple"><b></b></i></button>
+      </div>
+      <button id="new-game" class="primary" disabled><span>开始新棋局</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+      <button id="custom" class="text-button" disabled>自定义棋盘 <span>↗</span></button>
+    </section>
+    <div class="goal-note"><span class="goal-icon">↗</span><div><strong>目的地很简单</strong><p>从左到右排列 1–8，<br>把空位留在右下角。</p></div><div class="mini-board" aria-label="目标棋盘 123456780"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span class="empty"></span></div></div>
+  </aside>
+  <section class="game-column" aria-label="实时游戏棋盘">
+    <div class="board-heading"><div><span class="eyebrow">LIVE BOARD</span><h2 id="board-title">准备好，移动一下。</h2></div><span id="mode-badge" class="mode-badge">等待连接</span></div>
+    <div id="game-card" class="game-card">
+      <div class="card-topline"><span><i id="live-dot"></i><span id="live-label">实板棋局 · 未连接</span></span><span class="board-index">3 × 3 / 09</span></div>
+      <div class="board-wrap"><div id="board" class="board" role="group" aria-label="三乘三数字华容道棋盘"><div id="slots" class="slots" aria-hidden="true"></div><div id="tile-layer" class="tile-layer"></div><div id="blank-marker" class="blank-marker" aria-hidden="true"><span>+</span></div><div id="input-marker" class="input-marker" aria-hidden="true">E</div></div><div id="confetti" class="confetti" aria-hidden="true"></div></div>
+      <div class="board-bottom"><div class="board-message"><span id="message-icon" class="message-icon">↳</span><span id="board-message">连接 EGO1，开始一场实板游戏</span></div><span id="progress-label" class="progress-label">REAL HARDWARE</span></div>
+    </div>
+    <div class="toolbar"><button id="undo" class="tool-button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 4 10l5 5m-5-5h10a6 6 0 0 1 0 12"/></svg><span>撤回一步</span><kbd>Z</kbd></button><button id="hint" class="tool-button" disabled aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6m-5 3h4M8 14a6 6 0 1 1 8 0l-1 2H9z"/></svg><span>可移动提示</span><kbd>H</kbd></button><button id="reset" class="tool-icon" disabled title="清空棋盘，重新逐格输入" aria-label="清空棋盘"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5m-4.5-3a8 8 0 0 1 13-4L20 8M4 16l2.5 3a8 8 0 0 0 13-4"/></svg></button></div>
+    <div id="entry-panel" class="entry-panel" hidden><span id="entry-label">输入第 1 个数字</span><div id="keypad" class="keypad" role="group" aria-label="初始化输入数字"></div></div>
+    <div class="keyboard-strip"><span class="keyboard-label">KEYBOARD FRIENDLY</span><div><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd><span>移动空位</span><span class="key-divider"></span><kbd>1–8</kbd><span>选择棋子</span></div></div>
+  </section>
+  <aside class="insights" aria-label="游戏状态与操作">
+    <div class="session-heading"><span class="eyebrow">YOUR SESSION</span><span id="session-status" class="session-status">STANDBY</span></div>
+    <div class="metric valid-metric"><div class="metric-label"><span>有效步数</span><span class="metric-icon">↗</span></div><div class="metric-value"><span id="good-count">00</span><small>MOVES</small></div><div class="metric-bottom"><i></i>每一步都算数</div></div>
+    <div class="secondary-metrics"><div><span>无效尝试</span><strong id="bad-count">00</strong></div><div><span>本次计时</span><strong id="elapsed">00:00</strong></div></div>
+    <section class="hint-panel"><div class="section-heading"><h2>下一步的可能</h2><span class="mint">●</span></div><div id="hint-chips" class="hint-chips"><span class="muted-note">等待实板棋局</span></div><p id="hint-explanation">亮起的数字，可以移入空位。</p></section>
+    <section class="device-panel"><div class="section-heading"><h2>板载指示灯</h2><button id="binary-page" class="small-button" disabled title="切换计数高低四位">LOW</button></div><div id="led-strip" class="led-strip" aria-label="八位提示与统计灯"></div><div class="led-caption"><span id="led-caption">提示 / 统计同步显示</span><span id="sync-status">—</span></div></section>
+    <div class="demo-controls"><button id="demo" disabled><span class="play-icon">▷</span><span id="demo-label">演示模式</span><kbd>D</kbd></button><button id="next-demo" disabled title="演示下一幕（空格）" aria-label="演示下一幕">↦</button></div>
+    <div id="demo-progress" class="demo-progress" hidden></div>
+    <div class="hardware-note"><span class="pulse-ring"></span><p>每次移动都在 FPGA 上执行。<br>这里呈现的是开发板的真实状态。</p></div>
+  </aside>
+</main>
+<footer><span>CS207 <span class="footer-slash">/</span> DIGITAL LOGIC, MADE PLAYFUL.</span><span>8 TILES. ENDLESS POSSIBILITIES.<span class="footer-square"></span></span></footer>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<dialog id="connect-dialog"><form method="dialog" class="modal"><button type="button" class="close-dialog" aria-label="关闭">×</button><div class="eyebrow">LINK THE REAL WORLD</div><h2>连接你的 EGO1<span>。</span></h2><p>将开发板连接电脑，然后选择串口 B 通道。</p><label for="port-select">开发板串口</label><select id="port-select"></select><p id="port-help" class="modal-help"></p><button id="connect-confirm" type="button" class="primary"><span>连接并同步</span><span>↗</span></button><small>连接只开启控制，不会重置当前棋局。</small></form></dialog>
+<dialog id="custom-dialog"><form method="dialog" class="modal"><button type="button" class="close-dialog" aria-label="关闭">×</button><div class="eyebrow">YOUR BOARD, YOUR RULES</div><h2>摆一局自己的<span>。</span></h2><p>从左到右、从上到下输入九个数字。<br>0 代表空位；0–8 各出现一次。</p><label for="custom-input">棋盘布局</label><input id="custom-input" value="123456708" maxlength="17" inputmode="numeric" autocomplete="off" spellcheck="false"><div id="custom-preview" class="custom-preview"></div><p id="custom-error" class="modal-help"></p><button id="custom-confirm" type="button" class="primary"><span>写入开发板</span><span>↗</span></button><small>新布局会清空当前棋局与步数。</small></form></dialog>
+</body></html>

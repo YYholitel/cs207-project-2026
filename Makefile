@@ -2,7 +2,7 @@ VIVADO_ROOT ?= /home/tfx/opt/amd/2025.2/Vivado
 VIVADO := $(VIVADO_ROOT)/bin/vivado
 export PATH := $(VIVADO_ROOT)/bin:$(PATH)
 export VIVADO_ROOT
-.PHONY: sim build program status verify project
+.PHONY: sim build program status verify project gui check-gui verify-gui
 sim:
 	mkdir -p build
 	bash scripts/sim.sh
@@ -18,3 +18,11 @@ verify:
 project:
 	mkdir -p build
 	$(VIVADO) -mode batch -source scripts/create_project.tcl -log build/project.log -journal build/project.jou
+
+gui:
+	python tools/gui_server.py
+check-gui:
+	node --check gui/app.js
+	python -m unittest discover -s sim -p 'test_*.py' -v
+verify-gui:
+	python tools/verify_gui.py

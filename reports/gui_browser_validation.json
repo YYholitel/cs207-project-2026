@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "browser": "Codex in-app browser",
+  "hardware": "EGO1 via local UART bridge",
+  "tested_keys": [
+    "1",
+    "ArrowRight",
+    "Enter",
+    "Z",
+    "H",
+    "D",
+    "Space",
+    "R"
+  ],
+  "scenarios": [
+    "connect without resetting",
+    "custom layout 123456708",
+    "invalid numeric move increments invalid count",
+    "ArrowRight wins with valid=1 invalid=1",
+    "Enter toggles FPGA decimal stats",
+    "Z restores previous board and valid=0 invalid=1",
+    "H toggles FPGA hint view",
+    "D starts demonstration",
+    "Space advances demonstration",
+    "R starts solvable warmup with zeroed counters"
+  ],
+  "horizontal_overflow": false,
+  "console_errors": 0,
+  "screenshot": "docs/gui-preview.jpg",
+  "screenshot_sha256": "f11dc75c8f8f48ccd194e58f8ed6e21c6dc44c812fc330d9e78b2d98c7b7f993"
+}
