@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-24",
+  "version": "0.2",
+  "android_api_tested": 36,
+  "build": "assembleDebug and assembleDebugAndroidTest passed",
+  "apk_signature": "APK Signature Scheme v2 verified",
+  "model_tests": "passed: initialization, adjacency, undo, 0-99 counters, win, statistics and five-step demo",
+  "protocol_tests": "passed: version, checksum, corrupted frames, noise, fragmentation, query timeout, serialized commands and disconnect",
+  "rtl": "Icarus Verilog top-level regression passed; Android decoder accepted all 26 captured UART frames",
+  "device_ui": "passed: installed Activity, absent USB device, simulator, manual initialization, demo replay, remote move/win/statistics, external reset, timeout, disabled controls and simulator recovery",
+  "device_ui_transport": "in-memory serial transport through production RemoteBoard and BoardProtocol",
+  "physical_usb_and_bluetooth": "pending acceptance with the user's phone, powered EGO1 board and optional SPP module"
+}

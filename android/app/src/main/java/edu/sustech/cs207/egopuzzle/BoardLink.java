@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 /** Each command returns the board's confirmed state. */
 interface BoardLink {
-    enum Action { SYNC, RESET, PLACE, MOVE, UNDO, SHOW_STATS, PRACTICE, DEMO_NEXT }
+    enum Action { SYNC, RESET, PLACE, MOVE, UNDO, SHOW_STATS, PRACTICE, DEMO_NEXT, VIEW, HIGH_PAGE }
     enum Phase { SETUP, PLAYING, WON, STATS }
     enum Feedback { NONE, BAD_INPUT, INVALID_MOVE, UNDONE }
 
@@ -21,9 +21,19 @@ interface BoardLink {
         final int hints;
         final boolean canUndo;
         final int demoStep;
+        final boolean demoMode;
+        final boolean hintView;
+        final boolean highPage;
 
         Snapshot(int[] tiles, Phase phase, Feedback feedback, int setupIndex,
                  int validMoves, int invalidMoves, int hints, boolean canUndo, int demoStep) {
+            this(tiles, phase, feedback, setupIndex, validMoves, invalidMoves, hints, canUndo,
+                    demoStep, demoStep > 0, false, false);
+        }
+
+        Snapshot(int[] tiles, Phase phase, Feedback feedback, int setupIndex,
+                 int validMoves, int invalidMoves, int hints, boolean canUndo, int demoStep,
+                 boolean demoMode, boolean hintView, boolean highPage) {
             this.tiles = tiles.clone();
             this.phase = phase;
             this.feedback = feedback;
@@ -33,6 +43,9 @@ interface BoardLink {
             this.hints = hints;
             this.canUndo = canUndo;
             this.demoStep = demoStep;
+            this.demoMode = demoMode;
+            this.hintView = hintView;
+            this.highPage = highPage;
         }
 
         int tileAt(int index) {

@@ -38,13 +38,32 @@ public final class MainActivity extends Activity {
     private Button undo;
     private Button stats;
     private Button demo;
+    private TextView source;
+    private TextView connectionState;
+    private Button view;
+    private Button page;
+    private LinearLayout gameContent;
+    private BoardConnections connections;
+    private boolean remoteSession;
+    private boolean sessionReady = true;
+    private int sessionGeneration;
+    private BoardLink.Snapshot confirmedState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         board = restoreBoard(savedInstanceState);
         createScreen();
-        send(Action.SYNC, 0);
+        connections = new BoardConnections(this, this::useRemote, this::showConnectionMessage);
+        if (savedInstanceState != null && savedInstanceState.getBoolean("remote_session")) {
+            remoteSession = true;
+            board = null;
+            sessionReady = false;
+            restoreRemoteDisplay(savedInstanceState);
+            source.setText("EGO1 · 已断开");
+            showConnectionMessage("请重新连接开发板，同步当前棋局");
+            setGameEnabled(false);
+        } else send(Action.SYNC, 0);
     }
 
     @SuppressWarnings("deprecation")
@@ -59,6 +78,13 @@ public final class MainActivity extends Activity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (board instanceof SimulatedBoard simulated) outState.putSerializable("simulated_board", simulated);
+        outState.putBoolean("remote_session", remoteSession);
+        if (remoteSession && confirmedState != null) outState.putSerializable("remote_state", confirmedState);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void restoreRemoteDisplay(Bundle state) {
+        if (state.getSerializable("remote_state") instanceof BoardLink.Snapshot snapshot) render(snapshot);
     }
 
     private void createScreen() {
@@ -77,8 +103,25 @@ public final class MainActivity extends Activity {
         content.setPadding(dp(20), dp(12), dp(20), dp(18));
         scroll.addView(content, new ScrollView.LayoutParams(-1, -2));
 
-        TextView source = label("EGO1  ·  模拟板", 13, ACCENT, true);
+        source = label("EGO1  ·  模拟板", 13, ACCENT, true);
         content.addView(source);
+        LinearLayout links = row();
+        addWeighted(links, button("USB 连接", 14, PANEL, INK, v -> {
+            disconnectRemote();
+            connections.usb();
+        }), 48, 0);
+        addWeighted(links, button("蓝牙连接", 14, PANEL, INK, v -> {
+            disconnectRemote();
+            connections.bluetooth();
+        }), 48, 5);
+        addWeighted(links, button("模拟板", 14, PANEL, INK, v -> useSimulator()), 48, 5);
+        add(content, links, 6);
+        connectionState = label("可直接练习，也可以连接开发板", 13, MUTED, false);
+        add(content, connectionState, 5);
+        gameContent = new LinearLayout(this);
+        gameContent.setOrientation(LinearLayout.VERTICAL);
+        add(content, gameContent, 0);
+        content = gameContent;
         TextView title = label("数字华容道", 33, INK, true);
         if (Build.VERSION.SDK_INT >= 28) title.setAccessibilityHeading(true);
         add(content, title, 2);
@@ -131,7 +174,7 @@ public final class MainActivity extends Activity {
         addWeighted(controls, button("练习关", 15, ACCENT, 0xFFFFFFFF, v -> send(Action.PRACTICE, 0)), 48, 0);
         undo = button("撤回", 15, PANEL, INK, v -> send(Action.UNDO, 0));
         addWeighted(controls, undo, 48, 6);
-        addWeighted(controls, button("复位", 15, PANEL, INK, v -> send(Action.RESET, 0)), 48, 6);
+        addWeighted(controls, button("复位", 15, PANEL, INK, v -> confirmReset()), 48, 6);
         add(content, controls, 10);
 
         LinearLayout footer = row();
@@ -140,6 +183,12 @@ public final class MainActivity extends Activity {
         addWeighted(footer, demo, 48, 0);
         addWeighted(footer, stats, 48, 6);
         add(content, footer, 6);
+        LinearLayout boardControls = row();
+        view = button("板上提示 / 统计", 14, PANEL, INK, v -> send(Action.VIEW, 0));
+        page = button("计数高 / 低位", 14, PANEL, INK, v -> send(Action.HIGH_PAGE, 0));
+        addWeighted(boardControls, view, 48, 0);
+        addWeighted(boardControls, page, 48, 6);
+        add(content, boardControls, 6);
         setContentView(scroll);
     }
 
@@ -150,12 +199,21 @@ public final class MainActivity extends Activity {
     }
 
     private void send(Action action, int tile) {
-        board.send(action, tile, confirmed -> runOnUiThread(() -> render(confirmed)));
+        if (board == null || !sessionReady) return;
+        int generation = sessionGeneration;
+        if (board instanceof RemoteBoard) setGameEnabled(false);
+        board.send(action, tile, confirmed -> runOnUiThread(() -> {
+            if (generation != sessionGeneration) return;
+            sessionReady = true;
+            setGameEnabled(true);
+            render(confirmed);
+        }));
     }
 
     private void render(BoardLink.Snapshot state) {
+        confirmedState = state;
         boolean setup = state.phase == Phase.SETUP;
-        boolean interactive = state.phase == Phase.PLAYING && state.demoStep == 0;
+        boolean interactive = state.phase == Phase.PLAYING && !state.demoMode;
         boolean badInput = state.feedback == BoardLink.Feedback.BAD_INPUT;
         boolean invalidMove = state.feedback == BoardLink.Feedback.INVALID_MOVE;
         for (int i = 0; i < cells.length; i++) {
@@ -176,21 +234,124 @@ public final class MainActivity extends Activity {
         validValue.setContentDescription("有效步数 " + state.validMoves);
         invalidValue.setText(String.valueOf(state.invalidMoves));
         invalidValue.setContentDescription("无效步数 " + state.invalidMoves);
-        keypad.setVisibility(setup ? View.VISIBLE : View.GONE);
+        keypad.setVisibility(setup && !state.demoMode ? View.VISIBLE : View.GONE);
         tip.setVisibility(setup ? View.GONE : View.VISIBLE);
-        undo.setEnabled(state.canUndo && state.demoStep == 0);
+        undo.setEnabled(state.canUndo && !state.demoMode);
         undo.setAlpha(undo.isEnabled() ? 1f : 0.55f);
-        stats.setVisibility(state.phase == Phase.WON && state.demoStep == 0 ? View.VISIBLE : View.GONE);
-        demo.setText(state.demoStep == 0 ? "开始演示" : "演示下一步 · " + state.demoStep + "/5");
+        stats.setVisibility((state.phase == Phase.WON || state.phase == Phase.STATS) && !state.demoMode ? View.VISIBLE : View.GONE);
+        stats.setText(state.phase == Phase.STATS ? "返回棋盘" : "查看统计");
+        demo.setText(!state.demoMode ? "开始演示" : "演示下一步 · " + state.demoStep + "/5");
+        view.setText(state.hintView ? "板上显示 · 提示" : "板上显示 · 统计");
+        page.setText(state.highPage ? "计数页 · 高四位" : "计数页 · 低四位");
         status.setTextColor(badInput || invalidMove ? ERROR : ACCENT);
         status.setText(switch (state.phase) {
-            case SETUP -> badInput ? "编号重复，请重新输入第 " + (state.setupIndex + 1) + " 格"
+            case SETUP -> state.demoMode ? "演示已复位 · 点击下一步重播" : badInput ? "输入无效，请重新输入第 " + (state.setupIndex + 1) + " 格"
                     : "设置第 " + (state.setupIndex + 1) + " / 9 格 · 0 为空格";
             case PLAYING -> invalidMove ? "无法移动 · 棋子必须紧邻空格"
                     : state.feedback == BoardLink.Feedback.UNDONE ? "已撤回上一步" : "点击与空格相邻的棋子";
             case WON -> "已通关";
             case STATS -> "通关统计 · 有效 " + state.validMoves + " 步，无效 " + state.invalidMoves + " 步";
         });
+    }
+
+
+    private void confirmReset() {
+        if (!remoteSession) {
+            send(Action.RESET, 0);
+            return;
+        }
+        new android.app.AlertDialog.Builder(this).setTitle("复位开发板棋局？")
+                .setMessage("将清空棋盘和步数。")
+                .setPositiveButton("复位", (dialog, which) -> send(Action.RESET, 0))
+                .setNegativeButton("取消", null).show();
+    }
+
+    private void useRemote(SerialTransport transport, String label) {
+        disconnectRemote();
+        remoteSession = true;
+        sessionReady = false;
+        setGameEnabled(false);
+        source.setText("EGO1 · " + label);
+        connectionState.setText("正在读取开发板当前棋局…");
+        int generation = sessionGeneration;
+        RemoteBoard remote = new RemoteBoard(transport, state -> runOnUiThread(() -> {
+            if (generation != sessionGeneration) return;
+            sessionReady = true;
+            connectionState.setText("已连接 · 棋盘由开发板确认");
+            setGameEnabled(true);
+            render(state);
+        }), error -> runOnUiThread(() -> {
+            if (generation != sessionGeneration) return;
+            disconnectRemote();
+            showConnectionMessage("连接已中断 · " + error + "。请点连接按钮重试");
+        }));
+        board = remote;
+        remote.start();
+    }
+
+    private void disconnectRemote() {
+        sessionGeneration++;
+        if (board instanceof RemoteBoard remote) remote.close();
+        if (remoteSession) {
+            board = null;
+            sessionReady = false;
+            source.setText("EGO1 · 已断开");
+            setGameEnabled(false);
+        }
+    }
+
+    private void useSimulator() {
+        connections.cancel();
+        disconnectRemote();
+        remoteSession = false;
+        sessionReady = true;
+        board = new SimulatedBoard();
+        source.setText("EGO1 · 模拟板");
+        connectionState.setText("模拟板 · 可切换 USB 或蓝牙连接");
+        setGameEnabled(true);
+        send(Action.SYNC, 0);
+    }
+
+    private void showConnectionMessage(String message) {
+        connectionState.setText(message);
+    }
+
+    private void setGameEnabled(boolean enabled) {
+        enableChildren(gameContent, enabled);
+        gameContent.setAlpha(enabled ? 1f : 0.55f);
+    }
+
+    private void enableChildren(View target, boolean enabled) {
+        target.setEnabled(enabled);
+        if (target instanceof android.view.ViewGroup group) {
+            for (int i = 0; i < group.getChildCount(); i++) enableChildren(group.getChildAt(i), enabled);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int request, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(request, permissions, results);
+        if (request == 207) {
+            if (results.length > 0 && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) connections.bluetooth();
+            else showConnectionMessage("蓝牙权限未授予，可改用 USB 或模拟板");
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        connections.cancel();
+        if (remoteSession) {
+            disconnectRemote();
+            showConnectionMessage("已断开 · 回到前台后点连接按钮同步当前棋局");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        connections.destroy();
+        disconnectRemote();
+        super.onDestroy();
     }
 
     private TextView addCounter(LinearLayout row, String name, int gap) {

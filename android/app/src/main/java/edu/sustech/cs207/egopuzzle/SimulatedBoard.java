@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 final class SimulatedBoard implements BoardLink, Serializable {
     private static final int[] GOAL = {1, 2, 3, 4, 5, 6, 7, 8, 0};
     private static final int[] PRACTICE = {1, 2, 3, 4, 5, 6, 7, 0, 8};
-    private static final int COUNTER_MAX = 15;
+    private static final int COUNTER_MAX = 99;
     private final int[] tiles = new int[9];
     private Phase phase;
     private Feedback feedback;
@@ -16,6 +16,9 @@ final class SimulatedBoard implements BoardLink, Serializable {
     private int invalidMoves;
     private int demoStep;
     private Snapshot previous;
+    private boolean hintView;
+    private boolean highPage;
+    private boolean demoMode;
 
     SimulatedBoard() {
         reset();
@@ -32,14 +35,17 @@ final class SimulatedBoard implements BoardLink, Serializable {
                 if (phase == Phase.SETUP) place(tile);
             }
             case MOVE -> {
-                if (demoStep == 0 && phase == Phase.PLAYING) move(tile);
+                if (!demoMode && phase == Phase.PLAYING) move(tile);
             }
             case UNDO -> {
-                if (demoStep == 0) undo();
+                if (!demoMode) undo();
             }
             case SHOW_STATS -> {
-                if (demoStep == 0 && phase == Phase.WON) phase = Phase.STATS;
+                if (!demoMode && phase == Phase.WON) phase = Phase.STATS;
+                else if (!demoMode && phase == Phase.STATS) phase = Phase.WON;
             }
+            case VIEW -> hintView = !hintView;
+            case HIGH_PAGE -> highPage = !highPage;
         }
         onState.accept(snapshot());
     }
@@ -50,9 +56,12 @@ final class SimulatedBoard implements BoardLink, Serializable {
         feedback = Feedback.NONE;
         setupIndex = validMoves = invalidMoves = demoStep = 0;
         previous = null;
+        hintView = false;
+        demoMode = false;
     }
 
     private void place(int tile) {
+        if (demoMode) return;
         if (tile < 0 || tile > 8 || positionOf(tile) >= 0) {
             feedback = Feedback.BAD_INPUT;
             return;
@@ -63,7 +72,7 @@ final class SimulatedBoard implements BoardLink, Serializable {
     }
 
     private void move(int tile) {
-        previous = snapshot();
+        if (!demoMode) previous = snapshot();
         int tileIndex = positionOf(tile);
         int empty = positionOf(0);
         if (tile <= 0 || tileIndex < 0 || !neighbors(tileIndex, empty)) {
@@ -88,7 +97,7 @@ final class SimulatedBoard implements BoardLink, Serializable {
         phase = previous.phase;
         validMoves = previous.validMoves;
         invalidMoves = previous.invalidMoves;
-        feedback = Feedback.UNDONE;
+        feedback = previous.feedback == Feedback.INVALID_MOVE ? Feedback.INVALID_MOVE : Feedback.UNDONE;
         previous = null;
     }
 
@@ -101,13 +110,16 @@ final class SimulatedBoard implements BoardLink, Serializable {
 
     private void nextDemo() {
         switch (demoStep) {
-            case 0 -> loadPractice();
-            case 1 -> move(1);
-            case 2 -> move(8);
-            case 3 -> phase = Phase.STATS;
-            case 4 -> reset();
+            case 0, 5 -> {
+                loadPractice();
+                demoMode = true;
+                demoStep = 1;
+            }
+            case 1 -> { move(1); demoStep = 2; }
+            case 2 -> { move(8); demoStep = 3; }
+            case 3 -> { phase = Phase.STATS; demoStep = 4; }
+            case 4 -> { reset(); demoMode = true; demoStep = 5; }
         }
-        if (phase != Phase.SETUP) demoStep++;
     }
 
     private int positionOf(int tile) {
@@ -126,7 +138,7 @@ final class SimulatedBoard implements BoardLink, Serializable {
             }
         }
         return new Snapshot(tiles, phase, feedback, setupIndex, validMoves, invalidMoves,
-                mask, previous != null, demoStep);
+                mask, previous != null, demoStep, demoMode, hintView, highPage);
     }
 
     private static boolean neighbors(int first, int second) {

@@ -43,8 +43,8 @@ final class BoardSmokeCheck {
         require(state.setupIndex == 1 && state.feedback == Feedback.BAD_INPUT, "reject out of range");
         for (int tile : new int[]{2, 0, 3, 4, 5, 6, 7, 8}) send(Action.PLACE, tile);
         require(boardIs("120345678") && state.movable(2) && state.movable(5) && !state.movable(3), "edge hints");
-        for (int i = 0; i < 16; i++) send(Action.MOVE, 3);
-        require(boardIs("120345678") && state.invalidMoves == 15, "no row wrap and 4-bit counter limit");
+        for (int i = 0; i < 105; i++) send(Action.MOVE, 3);
+        require(boardIs("120345678") && state.invalidMoves == 99, "no row wrap and 0-99 counter limit");
     }
 
     private void fullDemo() {
@@ -52,14 +52,14 @@ final class BoardSmokeCheck {
         require(state.demoStep == 1 && state.validMoves == 0 && state.invalidMoves == 0
                 && boardIs("123456708"), "demo setup");
         send(Action.DEMO_NEXT);
-        require(state.demoStep == 2 && state.invalidMoves == 1 && boardIs("123456708"), "demo invalid move");
+        require(state.demoStep == 2 && !state.canUndo && state.invalidMoves == 1 && boardIs("123456708"), "demo invalid move");
         send(Action.DEMO_NEXT);
         require(state.demoStep == 3 && state.validMoves == 1 && state.invalidMoves == 1
                 && state.phase == Phase.WON && state.hints == 0b00000101 && boardIs("123456780"), "demo win");
         send(Action.DEMO_NEXT);
         require(state.demoStep == 4 && state.phase == Phase.STATS, "demo statistics");
         send(Action.DEMO_NEXT);
-        require(state.demoStep == 0 && state.phase == Phase.SETUP && state.setupIndex == 0
+        require(state.demoStep == 5 && state.demoMode && state.phase == Phase.SETUP && state.setupIndex == 0
                 && state.validMoves == 0 && state.invalidMoves == 0 && state.hints == 0, "demo reset");
         for (int i = 0; i < 9; i++) require(state.tileAt(i) == -1, "empty after reset");
     }

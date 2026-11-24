@@ -1,0 +1,33 @@
+name: Verify Android
+on:
+  push:
+    paths: ['android/**', '.github/workflows/android.yml']
+  pull_request:
+    paths: ['android/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.1.0'
+      - name: Build app and device tests
+        working-directory: android
+        run: ./gradlew assembleDebug assembleDebugAndroidTest
+      - name: Board rules and UART protocol
+        working-directory: android
+        run: |
+          mkdir -p build/model-check
+          src=app/src/main/java/edu/sustech/cs207/egopuzzle
+          javac -encoding UTF-8 -d build/model-check "$src/BoardLink.java" "$src/SimulatedBoard.java" "$src/SerialTransport.java" "$src/BoardProtocol.java" "$src/RemoteBoard.java" tools/BoardSmokeCheck.java tools/ProtocolCheck.java
+          java -cp build/model-check edu.sustech.cs207.egopuzzle.BoardSmokeCheck
+          java -cp build/model-check edu.sustech.cs207.egopuzzle.ProtocolCheck tools/rtl-frames.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ego1-android-debug
+          path: android/app/build/outputs/apk/debug/*.apk
